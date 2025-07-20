@@ -4,7 +4,7 @@ namespace Branzia\Settings;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Branzia\Settings\Livewire\SettingsFormRenderer;
+use Branzia\Settings\Services\SettingsRegistry;
 class SettingsServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -24,7 +24,8 @@ class SettingsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/branzia-settings'),
         ], 'settings-views');
-        
-        Livewire::component('branzia-settings::settings-form-renderer', SettingsFormRenderer::class);
+            $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'app-settings');
+
+        SettingsRegistry::push(\Branzia\Settings\Filament\Settings\EnvironmentSchema::class);
     }
 }

@@ -10,7 +10,7 @@ return new class extends Migration {
             $table->id();
             $table->string('key')->index();
             $table->text('value')->nullable();
-            $table->string('tenant_id')->nullable()->index();
+            $table->timestamps();
         });
     }
 

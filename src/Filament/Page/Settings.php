@@ -2,16 +2,18 @@
 
 namespace Branzia\Settings\Filament\Page;
 
+
 use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
+use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Component;
 use Branzia\Settings\Services\SettingsRegistry;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Components\Component;
-use Filament\Forms\Components\Field;
+
 class Settings extends Page
 {
     use InteractsWithForms;
@@ -21,16 +23,30 @@ class Settings extends Page
 
     public array $formData = [];
     public ?string $activeSetting = null;
-
+    
     public function mount(): void
     { 
         $this->activeSetting = $this->activeSetting ?? SettingsRegistry::getRegisteredPages()[0] ?? null;
         $filled = [];
         foreach (SettingsRegistry::getRegisteredPages() as $pageClass) {
-            if (method_exists($pageClass, 'hasEnv')) {
-                $data = $pageClass::hasEnv(); // should return key => value array
+            if (method_exists($pageClass, 'env')) {
+                $data = $pageClass::env(); 
                 if (is_array($data)) {
-                    $filled = array_merge($filled, $data);
+                    $evaluated = [];
+                    foreach ($data as $configKey => $value) {
+                         $lower = strtolower($value);
+                        if ($lower === 'true') {
+                            $value = true;
+                        } elseif ($lower === 'false') {
+                            $value = false;
+                        } elseif ($lower === 'null') {
+                            $value = null;
+                        } elseif (is_numeric($value)) {
+                            $value = $value + 0; 
+                        }
+                        $evaluated[$configKey] = env($value);
+                    }
+                    $filled = array_merge($filled, $evaluated);
                 }
             }
         }
@@ -74,19 +90,51 @@ class Settings extends Page
     {
         return collect($data)->dot()->all();
     }
-    public function save(): void
+    public function save(): int
     {
         $schema = $this->getActiveSchema();
         $data = $this->form->getState();
         $flattenedData = collect($data)->dot();
-        foreach ($flattenedData as $key => $value) {
-            \Branzia\Settings\Models\Setting::updateOrCreate(
-                ['key' => $key],
-                ['value' => is_array($value) ? json_encode($value) : $value]
-            );
-        }
 
-        \Filament\Notifications\Notification::make()->title('Settings saved successfully.')->success()->send();
+        /*
+        * Load environment mapping
+        */
+        $envMapping = [];
+        foreach (SettingsRegistry::getRegisteredPages() as $pageClass) {
+            if (method_exists($pageClass, 'env')) {
+                $envMapping = array_merge($envMapping, $pageClass::env());
+            }
+        }        
+        $envWriter = app(\Jackiedo\DotenvEditor\DotenvEditor::class);
+        foreach ($flattenedData as $key => $value) {
+            if (isset($envMapping[$key])) {
+                /*
+                * This is an env-backed field → write to .env
+                */
+                $envKey = $envMapping[$key];
+                $envWriter->setKey($envKey, is_bool($value) ? ($value ? 'true' : 'false') : (string) $value);
+            } else {
+                \Branzia\Settings\Models\Setting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => is_array($value) ? json_encode($value) : $value]
+                );
+            }
+        }
+        $envWriter->save();
+        /*
+        * Clear and cache config so updated .env values take effect
+        */
+        Artisan::call('config:clear');
+        \Artisan::call('config:cache');
+
+        /* 
+        * Optional: Restart queue workers if affected by env changes
+        */
+        if (app()->runningInConsole() === false) {
+            \Artisan::call('queue:restart');
+        }
+        return redirect()->route('settings')->with('success', 'Changes will apply shortly');
+        /*\Filament\Notifications\Notification::make()->title('Settings saved successfully.')->success()->send();*/
     }
 
     

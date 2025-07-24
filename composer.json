@@ -9,6 +9,9 @@
             "src/helpers.php"
         ]
     },
+    "require": {
+        "jackiedo/dotenv-editor": "^1.1"
+    },
     "extra": {
         "laravel": {
             "providers": [

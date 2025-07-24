@@ -18,40 +18,42 @@ class EnvironmentSchema extends FormSchema
     public static string $group = 'General';
     public static int $sort = 0;
 
-    public static function hasEnv():array{
+    public static function env(): array {
         return [
-            'app.name' => env('APP_NAME'),
-            'app.debug' => (bool) env('APP_DEBUG'),
-            'app.locale' => env('APP_LOCALE'),
-            'app.maintenance.driver' => (bool) env('APP_MAINTENANCE_DRIVER'),
-            'log.channel' => env('LOG_CHANNEL'),
-            'log.stack' => env('LOG_STACK'),
-            'log.level' => env('LOG_LEVEL'),
-            'db.connection' => env('DB_CONNECTION'),
-            'db.host' => env('DB_HOST'),
-            'db.port' => env('DB_PORT'),
-            'db.database' => env('DB_DATABASE'),
-            'db.username' => env('DB_USERNAME'),
-            'db.password' => env('DB_PASSWORD'),
-            'session.driver' => env('SESSION_DRIVER'),
-            'session.lifetime' => env('SESSION_LIFETIME'),
-            'session.encrypt' => (bool) env('SESSION_ENCRYPT'),
-            'session.path' => env('SESSION_PATH'),
-            'session.domain' => env('SESSION_DOMAIN'),
-            'redis.client' => env('REDIS_CLIENT'),
-            'redis.host' => env('REDIS_HOST'),
-            'redis.password' => env('REDIS_PASSWORD'),
-            'redis.port' => env('REDIS_PORT'),
-            'mail.mailer' => env('MAIL_MAILER'),
-            'mail.scheme' => env('MAIL_SCHEME'),
-            'mail.host' => env('MAIL_HOST'),
-            'mail.port' => env('MAIL_PORT'),
-            'mail.username' => env('MAIL_USERNAME'),
-            'mail.password' => env('MAIL_PASSWORD'),
-            'mail.from.address' => env('MAIL_FROM_ADDRESS'),
-            'mail.from.name' => env('MAIL_FROM_NAME'),
+            'app.name' => 'APP_NAME',
+            'app.debug' => 'APP_DEBUG',
+            'app.locale' => 'APP_LOCALE',
+            'app.maintenance.driver' => 'APP_MAINTENANCE_DRIVER',
+            'log.channel' => 'LOG_CHANNEL',
+            'log.stack' => 'LOG_STACK',
+            'log.level' => 'LOG_LEVEL',
+            'db.connection' => 'DB_CONNECTION',
+            'db.host' => 'DB_HOST',
+            'db.port' => 'DB_PORT',
+            'db.database' => 'DB_DATABASE',
+            'db.username' => 'DB_USERNAME',
+            'db.password' => 'DB_PASSWORD',
+            'session.driver' => 'SESSION_DRIVER',
+            'session.lifetime' => 'SESSION_LIFETIME',
+            'session.encrypt' => 'SESSION_ENCRYPT',
+            'session.path' => 'SESSION_PATH',
+            'session.domain' => 'SESSION_DOMAIN',
+            'redis.client' => 'REDIS_CLIENT',
+            'redis.host' => 'REDIS_HOST',
+            'redis.password' => 'REDIS_PASSWORD',
+            'redis.port' => 'REDIS_PORT',
+            'mail.mailer' => 'MAIL_MAILER',
+            'mail.scheme' => 'MAIL_SCHEME',
+            'mail.host' => 'MAIL_HOST',
+            'mail.port' => 'MAIL_PORT',
+            'mail.username' => 'MAIL_USERNAME',
+            'mail.password' => 'MAIL_PASSWORD',
+            'mail.from.address' => 'MAIL_FROM_ADDRESS',
+            'mail.from.name' => 'MAIL_FROM_NAME',
         ];
+
     }
+
 
     public static function baseSchema(): array
     {

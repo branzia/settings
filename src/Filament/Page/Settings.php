@@ -25,11 +25,21 @@ class Settings extends Page
     public function mount(): void
     { 
         $this->activeSetting = $this->activeSetting ?? SettingsRegistry::getRegisteredPages()[0] ?? null;
+        $filled = [];
+        foreach (SettingsRegistry::getRegisteredPages() as $pageClass) {
+            if (method_exists($pageClass, 'hasEnv')) {
+                $data = $pageClass::hasEnv(); // should return key => value array
+                if (is_array($data)) {
+                    $filled = array_merge($filled, $data);
+                }
+            }
+        }
+   
         $settings = \Branzia\Settings\Models\Setting::pluck('value', 'key')->map(function ($value) {
             $decoded = json_decode($value, true);
             return is_array($decoded) ? $decoded : $value;
         })->toArray();
-        $this->formData = \Illuminate\Support\Arr::undot($settings);
+        $this->formData = \Illuminate\Support\Arr::undot(array_merge($settings,$filled));
         $this->form->fill($this->formData); 
     }
 

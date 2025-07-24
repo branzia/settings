@@ -18,6 +18,41 @@ class EnvironmentSchema extends FormSchema
     public static string $group = 'General';
     public static int $sort = 0;
 
+    public static function hasEnv():array{
+        return [
+            'app.name' => env('APP_NAME'),
+            'app.debug' => (bool) env('APP_DEBUG'),
+            'app.locale' => env('APP_LOCALE'),
+            'app.maintenance.driver' => (bool) env('APP_MAINTENANCE_DRIVER'),
+            'log.channel' => env('LOG_CHANNEL'),
+            'log.stack' => env('LOG_STACK'),
+            'log.level' => env('LOG_LEVEL'),
+            'db.connection' => env('DB_CONNECTION'),
+            'db.host' => env('DB_HOST'),
+            'db.port' => env('DB_PORT'),
+            'db.database' => env('DB_DATABASE'),
+            'db.username' => env('DB_USERNAME'),
+            'db.password' => env('DB_PASSWORD'),
+            'session.driver' => env('SESSION_DRIVER'),
+            'session.lifetime' => env('SESSION_LIFETIME'),
+            'session.encrypt' => (bool) env('SESSION_ENCRYPT'),
+            'session.path' => env('SESSION_PATH'),
+            'session.domain' => env('SESSION_DOMAIN'),
+            'redis.client' => env('REDIS_CLIENT'),
+            'redis.host' => env('REDIS_HOST'),
+            'redis.password' => env('REDIS_PASSWORD'),
+            'redis.port' => env('REDIS_PORT'),
+            'mail.mailer' => env('MAIL_MAILER'),
+            'mail.scheme' => env('MAIL_SCHEME'),
+            'mail.host' => env('MAIL_HOST'),
+            'mail.port' => env('MAIL_PORT'),
+            'mail.username' => env('MAIL_USERNAME'),
+            'mail.password' => env('MAIL_PASSWORD'),
+            'mail.from.address' => env('MAIL_FROM_ADDRESS'),
+            'mail.from.name' => env('MAIL_FROM_NAME'),
+        ];
+    }
+
     public static function baseSchema(): array
     {
         return [

@@ -14,7 +14,10 @@ abstract class FormSchema
     {
         static::$extendedSchema[] = $callback;
     }
-
+    public static function hasEnv(): array
+    {
+        return []; 
+    }
     public static function getFormSchema(): array
     {
         $baseSchema = static::baseSchema();

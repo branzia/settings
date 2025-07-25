@@ -58,8 +58,8 @@ class Settings extends Page
     }
     public function getSidebarGroups(): Collection
     {
-        return collect(SettingsRegistry::getRegisteredPages())->groupBy(fn ($class) => $class::$group ?? 'General')->map(function ($pages, $group) {
-                return collect($pages)->sortBy(fn ($class) => $class::$sort ?? 0);
+        return collect(SettingsRegistry::getRegisteredPages())->groupBy(fn ($class) => $class::$navigationGroup ?? 'General')->map(function ($pages, $navigationGroup) {
+                return collect($pages)->sortBy(fn ($class) => $class::$navigationSort ?? 0);
         });
     }
     public function form(Form $form): Form {

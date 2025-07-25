@@ -1,6 +1,32 @@
 {
     "name": "branzia/settings",
+    "description": "A powerful FilamentPHP settings manager with dynamic schema support, .env and database storage, and a fully integrated admin panel.",
+    "keywords": [
+        "filamentphp",
+        "filament",
+        "laravel",
+        "settings",
+        "settings-panel",
+        "admin-panel",
+        "dotenv",
+        "env-editor",
+        "database-settings",
+        "config",
+        "dynamic-forms",
+        "developer-tools"
+    ],
     "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/branzia/settings",
+    "support": {
+        "source": "https://github.com/branzia/settings"
+    },
+    "authors": [
+        {
+            "name": "Visvanathan D",
+            "email": "Visvanathan.dev@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Branzia\\Settings\\": "src/"
@@ -10,6 +36,7 @@
         ]
     },
     "require": {
+        "php": ">=8.0",
         "jackiedo/dotenv-editor": "^1.1"
     },
     "extra": {

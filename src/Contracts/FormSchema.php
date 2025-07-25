@@ -4,9 +4,9 @@ namespace Branzia\Settings\Contracts;
 
 abstract class FormSchema
 {
-    public static string $tab;
-    public static string $group = 'General';
-    public static int $sort = 0;
+    public static string $navigationLabel = 'General';
+    public static string $navigationGroup = 'General';
+    public static int $navigationSort = 0;
 
     protected static array $extendedSchema = [];
 

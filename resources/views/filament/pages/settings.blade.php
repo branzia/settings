@@ -32,7 +32,7 @@
                                 <button wire:click="$set('activeSetting', @js($pageClass))"
                                         class="block w-full text-left px-3 py-2 rounded-md text-sm {{ $isActive ? 'bg-primary-50 text-primary-600 font-medium' : 'hover:bg-gray-100' }}"
                                 >
-                                    {{ $pageClass::$tab }}
+                                    {{ $pageClass::$navigationLabel }}
                                 </button>
                             </li>
                         @endforeach

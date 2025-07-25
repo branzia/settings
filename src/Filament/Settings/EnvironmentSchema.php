@@ -1,10 +1,7 @@
 <?php 
-
-
 namespace Branzia\Settings\Filament\Settings;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
-
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
@@ -14,9 +11,9 @@ use Branzia\Settings\Contracts\FormSchema;
 
 class EnvironmentSchema extends FormSchema 
 {
-    public static string $tab = 'Environment';
-    public static string $group = 'General';
-    public static int $sort = 0;
+    public static string $navigationLabel = 'Environment';
+    public static string $navigationGroup = 'General';
+    public static int $navigationSort = 0;
 
     public static function env(): array {
         return [

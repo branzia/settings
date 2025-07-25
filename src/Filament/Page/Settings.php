@@ -10,7 +10,10 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Filament\Forms\Components\Field;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 use Filament\Forms\Components\Component;
+use Branzia\Settings\Jobs\EnvironmentSettings;
 use Branzia\Settings\Services\SettingsRegistry;
 use Filament\Forms\Concerns\InteractsWithForms;
 
@@ -34,16 +37,6 @@ class Settings extends Page
                 if (is_array($data)) {
                     $evaluated = [];
                     foreach ($data as $configKey => $value) {
-                         $lower = strtolower($value);
-                        if ($lower === 'true') {
-                            $value = true;
-                        } elseif ($lower === 'false') {
-                            $value = false;
-                        } elseif ($lower === 'null') {
-                            $value = null;
-                        } elseif (is_numeric($value)) {
-                            $value = $value + 0; 
-                        }
                         $evaluated[$configKey] = env($value);
                     }
                     $filled = array_merge($filled, $evaluated);
@@ -90,7 +83,7 @@ class Settings extends Page
     {
         return collect($data)->dot()->all();
     }
-    public function save(): int
+    public function save(): void
     {
         $schema = $this->getActiveSchema();
         $data = $this->form->getState();
@@ -104,15 +97,20 @@ class Settings extends Page
             if (method_exists($pageClass, 'env')) {
                 $envMapping = array_merge($envMapping, $pageClass::env());
             }
-        }        
-        $envWriter = app(\Jackiedo\DotenvEditor\DotenvEditor::class);
+        }   
+             
+        $envPayload = [];
         foreach ($flattenedData as $key => $value) {
             if (isset($envMapping[$key])) {
                 /*
                 * This is an env-backed field → write to .env
                 */
                 $envKey = $envMapping[$key];
-                $envWriter->setKey($envKey, is_bool($value) ? ($value ? 'true' : 'false') : (string) $value);
+                $newValue = $this->normalizeEnvValue($value);
+                $currentEnvValue = env($envKey);
+                if($this->normalizeEnvValue($currentEnvValue) !== $newValue) {
+                    $envPayload[$envKey] = $newValue;
+                }
             } else {
                 \Branzia\Settings\Models\Setting::updateOrCreate(
                     ['key' => $key],
@@ -120,21 +118,22 @@ class Settings extends Page
                 );
             }
         }
-        $envWriter->save();
-        /*
-        * Clear and cache config so updated .env values take effect
-        */
-        Artisan::call('config:clear');
-        \Artisan::call('config:cache');
-
-        /* 
-        * Optional: Restart queue workers if affected by env changes
-        */
-        if (app()->runningInConsole() === false) {
-            \Artisan::call('queue:restart');
+        if (!empty($envPayload)) {
+            /*dispatch(new EnvironmentSettings($envPayload));*/
+            EnvironmentSettings::dispatchSync($envPayload);
         }
-        return redirect()->route('settings')->with('success', 'Changes will apply shortly');
+        
         /*\Filament\Notifications\Notification::make()->title('Settings saved successfully.')->success()->send();*/
+    }
+    private function normalizeEnvValue(mixed $value): string
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        if (is_null($value)) {
+            return 'null';
+        }
+        return trim((string) $value);
     }
 
     
